@@ -2,20 +2,17 @@
 
 include_once dirname(__DIR__, 1) . '/helper/BaseModel.php';
 
-class ResponseMessage implements BaseModel {
+class ResponseMeta implements BaseModel {
     public static $API_HTTP_CODE = "httpCode";
     public static $API_MESSAGE = "message";
-    public static $API_EXTRA_ERROR_CODE = "errorCode";
 
     private $httpCode;
     private $message;
-    private $errorCode;
 
-    public function __construct($httpCode = null, $message = null, $errorCode = null)
+    public function __construct($httpCode = null, $message = null)
     {
         $this->httpCode = $httpCode;
         $this->message = $message;
-        $this->errorCode = $errorCode;
     }
 
     public function setHttpCode($httpCode) {
@@ -26,11 +23,25 @@ class ResponseMessage implements BaseModel {
         return $this->httpCode;
     }
 
+    public function setMessage($message) {
+        $this->message = $message;
+    }
+
+    public function getMessage() {
+        return $this->message;
+    }
+
+    public static function getSuccessMeta() {
+        return new ResponseMeta(
+            Consts::$RESPONSE_OK_CODE, 
+            Consts::$RESPONSE_OK_MESSAGE
+        );
+    }
+
     public function toAssocArray() {
         return array(
-            ResponseMessage::$API_HTTP_CODE => $this->httpCode,
-            ResponseMessage::$API_MESSAGE => $this->message,
-            ResponseMessage::$API_EXTRA_ERROR_CODE => $this->errorCode
+            ResponseMeta::$API_HTTP_CODE => $this->httpCode,
+            ResponseMeta::$API_MESSAGE => $this->message
         );
     }
 
@@ -42,17 +53,16 @@ class ResponseMessage implements BaseModel {
     public function decodeFromJson($jsonData)
     { 
         $assocArray = json_decode($jsonData);
-        $object = new ResponseMessage(
-            $assocArray[ResponseMessage::$API_HTTP_CODE],
-            $assocArray[ResponseMessage::$API_MESSAGE],
-            $assocArray[ResponseMessage::$API_EXTRA_ERROR_CODE]
+        $object = new ResponseMeta(
+            $assocArray[ResponseMeta::$API_HTTP_CODE],
+            $assocArray[ResponseMeta::$API_MESSAGE]
         );
         return $object;
     }
 
     public function toString()
     { 
-        echo "Response Message :: ";
+        echo "ResponseMeta :: ";
     }
 }
 

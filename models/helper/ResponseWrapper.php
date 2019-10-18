@@ -1,18 +1,18 @@
 <?php
 
-include_once dirname(__DIR__, 1) . '/helper/ResponseMessage.php';
+include_once dirname(__DIR__, 1) . '/helper/ResponseMeta.php';
 
 class ResponseWrapper implements BaseModel{
     public static $API_DATA = "data";
-    public static $API_MESSAGE = "message";
+    public static $API_META = "meta";
 
     private $data;
-    private $message;
+    private $meta;
 
-    public function __construct($data = null, ResponseMessage $message = null)
+    public function __construct($data = null, ResponseMeta $meta = null)
     {
         $this->data = $data;
-        $this->message = $message;
+        $this->meta = $meta;
     }
 
     public function setData($data) {
@@ -23,18 +23,18 @@ class ResponseWrapper implements BaseModel{
         return $this->data;
     }
 
-    public function setMessage(ResponseMessage $message) {
-        $this->message = $message->toAssocArray();
+    public function setMeta(ResponseMeta $meta) {
+        $this->meta = $meta->toAssocArray();
     }
 
-    public function getMessage() {
-        return $this->message;
+    public function getMeta() {
+        return $this->meta;
     }
 
     public function toAssocArray() {
         return array(
             ResponseWrapper::$API_DATA => $this->data,
-            ResponseWrapper::$API_MESSAGE => $this->message
+            ResponseWrapper::$API_META => $this->meta
         );
     }
 
@@ -48,7 +48,7 @@ class ResponseWrapper implements BaseModel{
         $assocArray = json_decode($jsonData);
         $object = new ResponseWrapper(
             $assocArray[ResponseWrapper::$API_DATA],
-            $assocArray[ResponseWrapper::$API_MESSAGE]
+            $assocArray[ResponseWrapper::$API_META]
         );
         return $object;
     }

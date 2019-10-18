@@ -13,7 +13,7 @@ if (!isset($conn)) {
     $dsn = "pgsql:host=" . $host . ";port=" . $port .";dbname=" . $dbname . ";user=" . $user . ";password=" . $password . ";";
     //create a pdo instance
     $conn = new PDO($dsn, $user, $password);
-    $conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE,PDO::FETCH_OBJ);
+    $conn->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE,PDO::FETCH_ASSOC);
     $conn->setAttribute(PDO::ATTR_EMULATE_PREPARES,false);
     $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
   }
