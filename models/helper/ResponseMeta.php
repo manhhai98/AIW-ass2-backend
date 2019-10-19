@@ -31,10 +31,17 @@ class ResponseMeta implements BaseModel {
         return $this->message;
     }
 
-    public static function getSuccessMeta() {
+    public static function getSuccessGetMeta() {
         return new ResponseMeta(
-            Consts::$RESPONSE_OK_CODE, 
+            Consts::$RESPONSE_GET_OK_CODE, 
             Consts::$RESPONSE_OK_MESSAGE
+        );
+    }
+
+    public static function getSuccessCreateMeta() {
+        return new ResponseMeta(
+            Consts::$RESPONSE_CREATE_OK_CODE, 
+            Consts::$RESPONSE_CREATE_OK_MESSAGE
         );
     }
 
@@ -42,6 +49,14 @@ class ResponseMeta implements BaseModel {
         return array(
             ResponseMeta::$API_HTTP_CODE => $this->httpCode,
             ResponseMeta::$API_MESSAGE => $this->message
+        );
+    }
+
+    public function fromAssocArray($arrayData)
+    {
+        return new ResponseMeta(
+            $arrayData[ResponseMeta::$API_HTTP_CODE],
+            $arrayData[ResponseMeta::$API_MESSAGE]
         );
     }
 

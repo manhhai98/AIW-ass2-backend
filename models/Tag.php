@@ -31,6 +31,11 @@ class Tag implements BaseModel
         );
     }
 
+    public function fromAssocArray($dataArray) {
+        $this->name = $dataArray[Tag::$API_TAG_NAME];
+        return $this;
+    }
+
     public function encodeToJson()
     {
         return json_encode($this->toAssocArray());

@@ -19,7 +19,12 @@ function __main__()
 function handlePath($uri, $requestMethod)
 {
     $controller = null;
-    switch ($uri[2]) {
+    $mainPath = $uri[2];
+    if (!isPathValid($mainPath)) {
+        $response =  new ResponseWrapper(null, new ResponseMeta("404", "Invalid path, path not found"));
+        echo $response->encodeToJson();
+    }
+    switch ($mainPath) {
         case TagController::TAG_URI_PATH:
             $controller = new TagController($requestMethod, $uri[3] ?? null);
             break;
@@ -30,6 +35,12 @@ function handlePath($uri, $requestMethod)
     if ($controller) {
         $controller->processRequest();
     }
+}
+
+function isPathValid($path) {
+    $validPaths = [TagController::TAG_URI_PATH];
+    if (in_array($path, $validPaths)) return true;
+    else return false;
 }
 
 /**

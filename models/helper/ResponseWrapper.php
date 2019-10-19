@@ -12,7 +12,7 @@ class ResponseWrapper implements BaseModel{
     public function __construct($data = null, ResponseMeta $meta = null)
     {
         $this->data = $data;
-        $this->meta = $meta;
+        if ($meta) $this->meta = $meta->toAssocArray();
     }
 
     public function setData($data) {
@@ -35,6 +35,14 @@ class ResponseWrapper implements BaseModel{
         return array(
             ResponseWrapper::$API_DATA => $this->data,
             ResponseWrapper::$API_META => $this->meta
+        );
+    }
+
+    public function fromAssocArray($arrayData)
+    {
+        return new ResponseWrapper(
+            $arrayData[ResponseWrapper::$API_DATA],
+            $arrayData[ResponseWrapper::$API_META]
         );
     }
 

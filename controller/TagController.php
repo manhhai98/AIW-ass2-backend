@@ -1,8 +1,10 @@
 <?php
 
 include_once dirname(__DIR__, 1) . '/repo/TagRepository.php';
+include_once dirname(__DIR__, 1) . '/utils/validator-utils.php';
 
-class TagController {
+class TagController
+{
     const TAG_URI_PATH = "tags";
 
     private $requestMethod;
@@ -16,35 +18,82 @@ class TagController {
         $this->tagRepository = new TagRepository();
     }
 
-    public function processRequest() {
+    public function processRequest()
+    {
         switch ($this->requestMethod) {
             case 'GET':
                 if ($this->tagId == null) {
-                    $response = $this->tagRepository->getAll();
+                    $this->tagRepository->getAll();
                 } else {
-                    $response = $this->tagRepository->getById($this->tagId);
+                    $this->tagRepository->getById($this->tagId);
                 }
                 break;
             case 'POST':
-                // $response = $this->createUserFromRequest();
+                $tag = $this->createTagFromRequest();
+                if ($this->validateTag($tag)) {
+                    $this->tagRepository->createTag($tag);
+                }
                 break;
             case 'PUT':
-                //$response = $this->updateUserFromRequest($this->userId);
+                // TODO: add put operation
+                break;
+            case 'PATCH':
+                // TODO: add patch operations
                 break;
             case 'DELETE':
-                //$response = $this->deleteUser($this->userId);
+                $this->tagRepository->deleteTag($this->tagId);
                 break;
             default:
-                //$response = $this->notFoundResponse();
+                $this->invalidMethod();
                 break;
         }
-        // if ($response['body']) {
-        //     echo $response['body'];
-        // } else {
-        //     // TODO: may need to change how to handle error
-        //     $response['status_code_header'] = 'HTTP/1.1 404 Not Found';
+    }
+
+    private function createTagFromRequest()
+    {
+        $input = (array) json_decode(file_get_contents('php://input'), TRUE);
+        $tag = new Tag();
+        $tag->fromAssocArray($input);
+        return $tag;
+    }
+
+    private function validateTag(Tag $tag)
+    {
+        $tagName = $tag->getName();
+        $hasError = false;
+        $validateErrorMessage = "";
+        if (empty($tagName)) { 
+            $hasError = true;
+            $validateErrorMessage = "Tag name must not be empty";
+        }
+        if (strlen($tagName) > 255) { 
+            $hasError = true;
+            $validateErrorMessage = "Tag name must not exceed 255 characters";
+        }
+        // Uncommented due to error
+        // if (ValidatorUtils::hasSpecialChars($tagName)) {
+        //     $hasError = true;
+        //     $validateErrorMessage = "Tag name must not contains special characters";
         // }
+
+        if ($hasError) {
+            $errResponse = new ResponseWrapper(null, new ResponseMeta(
+                "400",
+                $validateErrorMessage
+            ));
+            echo $errResponse->encodeToJson();
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private function invalidMethod()
+    {
+        $errResponse = new ResponseWrapper(null, new ResponseMeta(
+            "405",
+            "Method not allowed"
+        ));
+        echo $errResponse->encodeToJson();
     }
 }
-
-?>
